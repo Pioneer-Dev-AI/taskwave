@@ -11,6 +11,7 @@ interface ListProps {
   onCardClick: (card: CardType) => void;
   onEditListTitle: (listId: string, newTitle: string) => void;
   onRemoveList: (listId: string) => void;
+  onSortByDate: (listId: string, updatedCards: CardType[]) => void;
   onSortByTitle: (listId: string, updatedCards: CardType[]) => void;
 }
 
@@ -19,12 +20,16 @@ const List: React.FC<ListProps> = ({
   onAddCard,
   onCardClick,
   onEditListTitle,
+  onRemoveList,
+  onSortByDate,
+  onSortByTitle,
 }) => {
   const [isAddingCard, setIsAddingCard] = useState(false);
   const [newCardTitle, setNewCardTitle] = useState('');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [listTitle, setListTitle] = useState(list.title);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [sortMode, setSortMode] = useState<'ASC' | 'DESC' | null>(null);
 
   const handleAddCard = () => {
     if (newCardTitle.trim()) {
@@ -86,11 +91,43 @@ const List: React.FC<ListProps> = ({
   };
 
   const handleRemoveList = () => {
-    throw new Error('Function not implemented.');
+    onRemoveList(list.id);
   };
 
   const handleSortByTitle = () => {
-    throw new Error('Function not implemented.');
+    if (sortMode === 'DESC') {
+      onSortByTitle(
+        list.id,
+        list.cards.sort((a, b) => b.title.localeCompare(a.title)),
+      );
+
+      setSortMode("ASC")
+    } else {
+      onSortByTitle(
+        list.id,
+        list.cards.sort((a, b) => a.title.localeCompare(b.title)),
+      );
+
+      setSortMode("DESC")
+    }
+  };
+
+  const handleSortByDate = () => {
+    if (sortMode === 'DESC') {
+      onSortByDate(
+        list.id,
+        list.cards.sort((a, b) => b.dateAdded.getTime() - a.dateAdded.getTime()),
+      );
+
+      setSortMode("ASC")
+    } else {
+      onSortByDate(
+        list.id,
+        list.cards.sort((a, b) => a.dateAdded.getTime() - b.dateAdded.getTime()),
+      );
+
+      setSortMode("DESC")
+    }
   };
 
   return (
@@ -140,7 +177,9 @@ const List: React.FC<ListProps> = ({
                 >
                   Sort by title (Ascending and Descending)
                 </li>
-                <li className="py-2 px-4 rounded cursor-pointer hover:bg-[#8d80d6]">
+                <li className="py-2 px-4 rounded cursor-pointer hover:bg-[#8d80d6]"
+                  onClick={handleSortByDate}
+                >
                   Sort by date (Ascending and Descending)
                 </li>
               </ul>

@@ -12,7 +12,7 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#1f1f2e] text-white">
+    <div className="flex flex-col h-screen bg-blue-900 text-white">
       <Header onCardSearch={handleCardSearch} />
       <Main searchKey={searchKey} />
     </div>
